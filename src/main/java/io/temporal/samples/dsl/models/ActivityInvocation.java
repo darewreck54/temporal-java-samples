@@ -3,12 +3,12 @@ package io.temporal.samples.dsl.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
-import io.temporal.activity.ActivityCancellationType;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.failure.CanceledFailure;
+import io.temporal.failure.TemporalFailure;
 import io.temporal.workflow.ActivityStub;
 import io.temporal.workflow.CancellationScope;
 import io.temporal.workflow.Promise;
@@ -71,15 +71,15 @@ public class ActivityInvocation {
 
       try {
         activityExecutePromise.get();
-      } catch(ActivityFailure e) {
-        if (!(e.getCause() instanceof CanceledFailure)) {
+      } catch (ActivityFailure e) {
+        if (e.getCause() instanceof CanceledFailure) {
           System.out.println("scope successfully cancelled");
           if (!Strings.isNullOrEmpty(this.result)) {
             bindings.put(this.result, callbackReturnValue);
           }
           CanceledFailure cex = (CanceledFailure) e.getCause();
           throw ApplicationFailure.newNonRetryableFailure(
-                  e.getMessage(), CanceledFailure.class.getTypeName(), cex.getDetails());
+              e.getMessage(), CanceledFailure.class.getTypeName(), cex.getDetails());
         } else {
           System.out.println("scope received a CanceledFailure");
           throw e;
@@ -101,6 +101,8 @@ public class ActivityInvocation {
       }
 
       return null;
+    } catch (TemporalFailure e) {
+      throw e;
     } catch (RuntimeException e) {
       throw ApplicationFailure.newNonRetryableFailure(e.getMessage(), e.toString(), e.getMessage());
     } finally {

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.client.WorkflowStub;
 import io.temporal.common.RetryOptions;
 import io.temporal.samples.dsl.models.DslWorkflow;
 import io.temporal.samples.hello.HelloActivity;
@@ -109,6 +110,8 @@ public class DslActivityTest {
 
     // trigger signal
     workflow.callback("SampleActivities1");
+    // Wait for workflow to complete
+    WorkflowStub.fromTyped(workflow).getResult(Void.class);
   }
 
   /*
