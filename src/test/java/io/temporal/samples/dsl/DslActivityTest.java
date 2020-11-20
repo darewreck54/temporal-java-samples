@@ -82,6 +82,11 @@ public class DslActivityTest {
     Worker newWorker = testEnv.newWorker("SampleActivities1");
     newWorker.registerActivitiesImplementations(activities);
 
+    SampleActivities.SampleActivitiesImpl2 activities2 =
+        new SampleActivities.SampleActivitiesImpl2();
+    Worker newWorker2 = testEnv.newWorker("SampleActivities2");
+    newWorker2.registerActivitiesImplementations(activities2);
+
     testEnv.start();
 
     // Get a workflow stub using the same task queue the worker uses.
@@ -103,12 +108,13 @@ public class DslActivityTest {
     objectMapper.findAndRegisterModules();
 
     DslWorkflow dslWorkflow = objectMapper.readValue(new File(absolutePath), DslWorkflow.class);
+    // workflow.execute(dslWorkflow);
     WorkflowClient.start(workflow::execute, dslWorkflow);
 
-    testEnv.sleep(Duration.ofSeconds(20));
+    testEnv.sleep(Duration.ofSeconds(100));
 
     // trigger signal
-    workflow.callback("SampleActivities1");
+    //  workflow.callback("SampleActivities1");
   }
 
   /*

@@ -13,7 +13,6 @@ root:
       - activity:
           name: SampleActivities1
           method: getInfo
-          supportCallback: true
           arguments:
             - arg1
           result: result1

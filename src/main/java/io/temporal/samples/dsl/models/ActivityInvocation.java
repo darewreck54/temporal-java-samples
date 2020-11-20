@@ -9,6 +9,7 @@ import io.temporal.common.RetryOptions;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.failure.CanceledFailure;
+import io.temporal.failure.TemporalException;
 import io.temporal.workflow.ActivityStub;
 import io.temporal.workflow.CancellationScope;
 import io.temporal.workflow.Promise;
@@ -68,36 +69,29 @@ public class ActivityInvocation {
       scope.run();
 
       Promise<String> activityExecutePromise = activityExecutePromiseAtomic.get();
-
+      String activityResults = null;
       try {
-        activityExecutePromise.get();
-      } catch(ActivityFailure e) {
-        if (!(e.getCause() instanceof CanceledFailure)) {
+        activityResults = activityExecutePromise.get();
+      } catch (ActivityFailure e) {
+        if ((e.getCause() instanceof CanceledFailure)) {
           System.out.println("scope successfully cancelled");
-          if (!Strings.isNullOrEmpty(this.result)) {
-            bindings.put(this.result, callbackReturnValue);
+          if (scope.isCancelRequested()) {
+            activityResults = callbackReturnValue;
           }
-          CanceledFailure cex = (CanceledFailure) e.getCause();
-          throw ApplicationFailure.newNonRetryableFailure(
-                  e.getMessage(), CanceledFailure.class.getTypeName(), cex.getDetails());
+
         } else {
           System.out.println("scope received a CanceledFailure");
           throw e;
         }
+      } catch (TemporalException ex) {
+        throw ex;
       }
       // execute activity which will be blocking
-      String promiseResults = activityExecutePromise.get();
-      System.out.println("Activity Invocation got canceled.");
-      // Determine if the callback was triggered which will effectively cancel the activity
-      final String results;
-      if (scope.isCancelRequested()) {
-        results = callbackReturnValue;
-      } else {
-        results = promiseResults;
-      }
+      System.out.println("Activity has completed");
 
+      // Determine if the callback was triggered which will effectively cancel the activity
       if (!Strings.isNullOrEmpty(this.result)) {
-        bindings.put(this.result, results);
+        bindings.put(this.result, activityResults);
       }
 
       return null;
