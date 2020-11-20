@@ -4,7 +4,6 @@ import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import io.temporal.client.ActivityWorkerShutdownException;
 
 public class SampleActivities {
   @ActivityInterface(namePrefix = "SampleActivities1")
@@ -37,18 +36,33 @@ public class SampleActivities {
     @Override
     public String getInfo() {
       ActivityExecutionContext context = Activity.getExecutionContext();
-      int test = 0;
+      // info = context.getInfo();
+      // info.getActivityId();
+
+      long test = 0;
+      /*
       while (true) {
         try {
           test++;
           context.heartbeat(test);
+          sleep(1);
         } catch (ActivityWorkerShutdownException ex) {
           System.out.println(ex.getMessage());
           throw Activity.wrap(ex);
         }
       }
-      // String name = Activity.getExecutionContext().getInfo().getActivityType();
-      // return "Result_" + name;
+
+       */
+      String name = Activity.getExecutionContext().getInfo().getActivityType();
+      return "Result_" + name;
+    }
+
+    private void sleep(int seconds) {
+      try {
+        Thread.sleep(seconds * 1000);
+      } catch (InterruptedException ee) {
+        // Empty
+      }
     }
   }
 
