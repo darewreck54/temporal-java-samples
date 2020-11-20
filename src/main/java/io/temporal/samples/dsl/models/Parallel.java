@@ -18,7 +18,10 @@ public class Parallel {
     this.branches = branches;
   }
 
-  public void execute(Map<String, String> bindings, Map<String, CancellationScope> map) {
+  public void execute(
+      Map<String, String> bindings,
+      Map<String, CancellationScope> map,
+      Map<String, String> activitySignalResponseMap) {
     // In the parallel block, we want to execute all of them in parallel and wait for all of them.
     // if one activity fails then we want to cancel all the rest of them as well.
     List<Promise<Void>> results = new ArrayList<>(bindings.size());
@@ -26,7 +29,8 @@ public class Parallel {
         Workflow.newCancellationScope(
             () -> {
               for (Statement statement : branches) {
-                results.add(Async.function(statement::execute, bindings, map));
+                results.add(
+                    Async.function(statement::execute, bindings, map, activitySignalResponseMap));
               }
             });
     // As code inside the scope is non blocking the run doesn't block.

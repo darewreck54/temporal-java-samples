@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.common.RetryOptions;
 import io.temporal.samples.dsl.models.DslWorkflow;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
@@ -47,7 +49,20 @@ public class DslStarter {
 
     SimpleDSLWorkflow interpreter =
         client.newWorkflowStub(
-            SimpleDSLWorkflow.class, WorkflowOptions.newBuilder().setTaskQueue(TASK_QUEUE).build());
-    interpreter.execute(dslWorkflow);
+            SimpleDSLWorkflow.class,
+            WorkflowOptions.newBuilder()
+                .setRetryOptions(RetryOptions.newBuilder().setMaximumAttempts(1).build())
+                .setTaskQueue(TASK_QUEUE)
+                .build());
+    try {
+      WorkflowClient.start(interpreter::execute, dslWorkflow);
+      System.out.println("Started execution");
+      interpreter.callback("SampleActivities1", "new value");
+    } catch (WorkflowExecutionAlreadyStarted e) {
+      System.out.println("Already running as " + e.getExecution());
+    } catch (Throwable e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
   }
 }

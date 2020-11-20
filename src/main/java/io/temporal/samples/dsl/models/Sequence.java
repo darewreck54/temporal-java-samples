@@ -13,9 +13,12 @@ public class Sequence {
     this.elements = elements;
   }
 
-  public void execute(Map<String, String> bindings, Map<String, CancellationScope> map) {
+  public void execute(
+      Map<String, String> bindings,
+      Map<String, CancellationScope> map,
+      Map<String, String> activitySignalResponseMap) {
     for (Statement s : elements) {
-      s.execute(bindings, map);
+      s.execute(bindings, map, activitySignalResponseMap);
     }
   }
 }

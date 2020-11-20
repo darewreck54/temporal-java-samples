@@ -76,7 +76,7 @@ public class DslActivityTest {
     testEnv.close();
   }
 
-  @Test
+  @Test(timeout = 5000)
   public void testCallbackLogic() throws IOException {
     SampleActivities.SampleActivitiesImpl1 activities =
         new SampleActivities.SampleActivitiesImpl1();
@@ -112,11 +112,14 @@ public class DslActivityTest {
     // workflow.execute(dslWorkflow);
     WorkflowClient.start(workflow::execute, dslWorkflow);
 
-    testEnv.sleep(Duration.ofSeconds(20));
-    workflow.callback("SampleActivities1");
+    testEnv.sleep(Duration.ofSeconds(30));
+    workflow.callback("SampleActivities1", "hello");
+
+    testEnv.sleep(Duration.ofSeconds(30));
     Assert.assertTrue(false);
     // trigger signal
     //  workflow.callback("SampleActivities1");
+
   }
 
   /*

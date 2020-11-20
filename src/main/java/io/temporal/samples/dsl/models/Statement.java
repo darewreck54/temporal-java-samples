@@ -20,17 +20,20 @@ public class Statement {
     this.parallel = parallel;
   }
 
-  public Void execute(Map<String, String> bindings, Map<String, CancellationScope> map) {
+  public Void execute(
+      Map<String, String> bindings,
+      Map<String, CancellationScope> map,
+      Map<String, String> activitySignalResponseMap) {
     if (this.parallel != null) {
-      this.parallel.execute(bindings, map);
+      this.parallel.execute(bindings, map, activitySignalResponseMap);
     }
 
     if (this.sequence != null) {
-      this.sequence.execute(bindings, map);
+      this.sequence.execute(bindings, map, activitySignalResponseMap);
     }
 
     if (this.activity != null) {
-      this.activity.execute(bindings, map);
+      this.activity.execute(bindings, map, activitySignalResponseMap);
     }
 
     return null;

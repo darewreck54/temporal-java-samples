@@ -11,5 +11,5 @@ public interface SimpleDSLWorkflow {
   void execute(DslWorkflow workflow);
 
   @SignalMethod
-  void callback(String value);
+  void callback(String activityName, String response);
 }

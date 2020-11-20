@@ -11,20 +11,15 @@ root:
   sequence:
     elements:
       - activity:
-          name: SampleActivity1
+          name: SampleActivities1
           method: getInfo
+          supportCallBack: true
           arguments:
             - arg1
           result: result1
       - activity:
-          name: SampleActivity2
+          name: SampleActivities2
           method: getInfo
           arguments:
             - result1
           result: result2
-      - activity:
-          name: SampleActivity3
-          method: getInfo
-          arguments:
-            - result2
-          result: result3

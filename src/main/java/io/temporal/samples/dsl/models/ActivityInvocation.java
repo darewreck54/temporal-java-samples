@@ -23,7 +23,6 @@ public class ActivityInvocation {
   public String[] arguments;
   public String result;
   public boolean supportCallback;
-  private String callbackReturnValue;
 
   @JsonCreator
   public ActivityInvocation(
@@ -39,7 +38,10 @@ public class ActivityInvocation {
     this.supportCallback = supportCallback;
   }
 
-  public Void execute(Map<String, String> bindings, Map<String, CancellationScope> map) {
+  public Void execute(
+      Map<String, String> bindings,
+      Map<String, CancellationScope> map,
+      Map<String, String> activitySignalResponseMap) {
     String[] args = makeInput(this.arguments, bindings);
     ActivityStub stub =
         Workflow.newUntypedActivityStub(
@@ -75,7 +77,7 @@ public class ActivityInvocation {
         if ((e.getCause() instanceof CanceledFailure)) {
           System.out.println("scope successfully cancelled");
           if (scope.isCancelRequested()) {
-            activityResults = callbackReturnValue;
+            activityResults = activitySignalResponseMap.get(this.name);
           }
 
         } else {
@@ -98,7 +100,6 @@ public class ActivityInvocation {
       e.printStackTrace();
       throw ApplicationFailure.newNonRetryableFailure(e.getMessage(), e.toString(), e.getMessage());
     } finally {
-      callbackReturnValue = null;
     }
   }
 
