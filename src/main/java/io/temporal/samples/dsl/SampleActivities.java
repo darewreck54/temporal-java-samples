@@ -4,6 +4,7 @@ import io.temporal.activity.Activity;
 import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import io.temporal.client.ActivityCompletionException;
 
 public class SampleActivities {
   @ActivityInterface(namePrefix = "SampleActivities1")
@@ -12,22 +13,22 @@ public class SampleActivities {
     String getInfo();
   }
 
-  @ActivityInterface(namePrefix = "SampleActivity2")
+  @ActivityInterface(namePrefix = "SampleActivities2")
   public interface SampleActivities2 {
     String getInfo();
   }
 
-  @ActivityInterface(namePrefix = "SampleActivity3")
+  @ActivityInterface(namePrefix = "SampleActivities3")
   public interface SampleActivities3 {
     String getInfo();
   }
 
-  @ActivityInterface(namePrefix = "SampleActivity4")
+  @ActivityInterface(namePrefix = "SampleActivities4")
   public interface SampleActivities4 {
     String getInfo();
   }
 
-  @ActivityInterface(namePrefix = "SampleActivity5")
+  @ActivityInterface(namePrefix = "SampleActivities5")
   public interface SampleActivities5 {
     String getInfo();
   }
@@ -40,21 +41,29 @@ public class SampleActivities {
       // info.getActivityId();
 
       long test = 0;
-      /*
       while (true) {
         try {
           test++;
           context.heartbeat(test);
           sleep(1);
-        } catch (ActivityWorkerShutdownException ex) {
-          System.out.println(ex.getMessage());
-          throw Activity.wrap(ex);
+        } catch (ActivityCompletionException e) {
+          // There are multiple reasons for heartbeat throwing an exception.
+          // All of them are modeled as subclasses of the ActivityCompletionException.
+          // The main three reasons are:
+          // * activity cancellation,
+          // * activity not existing (due to timeout for example) from the service point of view
+          // * worker shutdown requested
+
+          // Simulate cleanup
+          System.out.println("Activity finished cancellation");
+          throw e;
+          // throw ApplicationFailure.newNonRetryableFailure(
+          // e.getMessage(), e.getCause().getClass().getTypeName());
         }
       }
 
-       */
-      String name = Activity.getExecutionContext().getInfo().getActivityType();
-      return "Result_" + name;
+      // String name = Activity.getExecutionContext().getInfo().getActivityType();
+      // return "Result_" + name;
     }
 
     private void sleep(int seconds) {

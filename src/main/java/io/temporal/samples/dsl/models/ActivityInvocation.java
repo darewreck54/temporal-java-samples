@@ -3,7 +3,6 @@ package io.temporal.samples.dsl.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
-import io.temporal.activity.ActivityCancellationType;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.failure.ActivityFailure;
@@ -96,6 +95,7 @@ public class ActivityInvocation {
 
       return null;
     } catch (RuntimeException e) {
+      e.printStackTrace();
       throw ApplicationFailure.newNonRetryableFailure(e.getMessage(), e.toString(), e.getMessage());
     } finally {
       callbackReturnValue = null;

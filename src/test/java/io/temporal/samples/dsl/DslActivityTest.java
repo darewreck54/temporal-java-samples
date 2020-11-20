@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -111,8 +112,9 @@ public class DslActivityTest {
     // workflow.execute(dslWorkflow);
     WorkflowClient.start(workflow::execute, dslWorkflow);
 
-    testEnv.sleep(Duration.ofSeconds(100));
-
+    testEnv.sleep(Duration.ofSeconds(20));
+    workflow.callback("SampleActivities1");
+    Assert.assertTrue(false);
     // trigger signal
     //  workflow.callback("SampleActivities1");
   }
