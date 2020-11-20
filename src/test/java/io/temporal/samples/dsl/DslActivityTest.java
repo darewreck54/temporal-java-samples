@@ -76,7 +76,7 @@ public class DslActivityTest {
     testEnv.close();
   }
 
-  @Test(timeout = 5000)
+  @Test
   public void testCallbackLogic() throws IOException {
     SampleActivities.SampleActivitiesImpl1 activities =
         new SampleActivities.SampleActivitiesImpl1();
