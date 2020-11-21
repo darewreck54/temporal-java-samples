@@ -46,8 +46,10 @@ public class ActivityInvocation {
     ActivityStub stub =
         Workflow.newUntypedActivityStub(
             ActivityOptions.newBuilder()
-                .setRetryOptions(RetryOptions.newBuilder().setMaximumAttempts(1).build())
+                .setRetryOptions(
+                    RetryOptions.newBuilder().setInitialInterval(Duration.ofMinutes(1)).build())
                 .setStartToCloseTimeout(Duration.ofMinutes(5))
+                .setHeartbeatTimeout(Duration.ofSeconds(1))
                 .setTaskQueue(this.name)
                 .build());
 

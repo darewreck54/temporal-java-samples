@@ -57,6 +57,7 @@ public class DslStarter {
     try {
       WorkflowClient.start(interpreter::execute, dslWorkflow);
       System.out.println("Started execution");
+      Thread.sleep(2000);
       interpreter.callback("SampleActivities1", "new value");
     } catch (WorkflowExecutionAlreadyStarted e) {
       System.out.println("Already running as " + e.getExecution());
